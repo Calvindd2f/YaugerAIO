@@ -1,0 +1,131 @@
+YaugerAIO v1.2.1
+================
+
+Overview
+--------
+YaugerAIO is an all-in-one PowerShell script designed to help you maintain and optimize your Windows system. This version automates a variety of system checks, cleanups, and updates while providing detailed logging of each action. Whether you’re looking to free up disk space, monitor system health, or ensure your computer is running smoothly, YaugerAIO has you covered.
+
+Key Features
+------------
+System Monitoring
+    Disk Space Check:
+        Displays the free and used space on your main drive (C:), helping you keep track of available storage.
+
+    CPU Usage:
+        Monitors and reports the current CPU load so you can gauge system performance.
+
+    RAM Usage:
+        Shows how much memory is being used versus what is available, aiding in performance troubleshooting.
+
+    System Uptime:
+        Indicates how long your system has been running continuously, along with recommendations for regular restarts.
+
+    GPU Information:
+        Lists detected GPU(s) and their respective driver versions for quick hardware reference.
+
+Cleanup & Optimization
+    DNS Cache Flush:
+        Clears your system’s DNS cache to help resolve connectivity issues.
+
+    Browser Cache Clearing:
+        Automatically clears the cache for popular browsers – including Chrome, Edge, Brave, Opera, and Firefox – to free up space and improve performance.
+
+    Disk Cleanup (Optional):
+        Optionally invokes Windows Disk Cleanup to remove temporary files and unnecessary data.
+
+System Maintenance
+    DISM Scan:
+        Runs a DISM (Deployment Image Servicing and Management) scan to check and repair the Windows system image, ensuring system health.
+
+    SFC Scan:
+        Executes an SFC (System File Checker) scan to detect and fix corrupted system files.
+        Improved Output: The scan now consistently ends with “Scanning ...” (three dots) to match the DISM scan display.
+
+Windows Updates
+    Update Module Installation:
+        Installs and configures the PSWindowsUpdate module if it’s not already available on your system.
+
+    Update Check & Install:
+        Checks for available Windows updates and installs them automatically.
+
+    Restart Prompt Refinement:
+        The restart prompt is now shown at the end of the script—after all tasks (including logging) have completed—to avoid interrupting any processes midway.
+
+Logging & Reporting
+    Detailed Log File:
+        Every action, from system checks to updates, is logged. A detailed log file is created on your Desktop, allowing you to review all operations after the script completes.
+
+    Accurate Runtime Reporting:
+        The total runtime now correctly includes the duration of Windows updates, providing a true measure of the script’s execution time.
+
+Visual & Functional Enhancements
+    Intuitive Color Coding:
+        Enhanced color coding for process outputs makes it easier to identify different types of messages.
+
+    Expanded Browser Support:
+        Support has been added for clearing caches in Brave, Opera, and Firefox in addition to Chrome and Edge.
+
+    Save Space Calculation Fix:
+        The calculation for space freed now correctly prevents negative values that could occur during repeated tests.
+
+    Revamped ASCII Banner:
+        The ASCII banner has been updated for a more engaging and fun introduction.
+
+    Browser Cache Warning:
+        A reminder is included to close all browsers before cache clearing to ensure the process runs effectively.
+
+Requirements
+------------
+    Operating System:   Windows 10 or newer
+    PowerShell:         Version 5.1 or later (typically pre-installed)
+    Admin Rights:       Must run PowerShell as Administrator
+    Internet Connection:Required for downloading the PSWindowsUpdate module if needed
+
+Usage Instructions
+------------------
+    Download & Save:
+        Place the YaugerAIOv1.2.1.ps1 script file on your Desktop.
+
+    Run as Administrator:
+        Right-click the PowerShell icon and choose "Run as Administrator".
+
+    Execute the Script:
+        Navigate to your Desktop in the PowerShell window.
+        Type ".\YaugerAIOv1.2.1.ps1" and press Enter.
+
+    Follow On-Screen Prompts:
+        The script will display its tasks, and you will be prompted for optional actions such as Disk Cleanup.
+        Ensure you close all open browsers before proceeding, as the script will clear browser caches.
+
+    Review the Log File:
+        After execution, check your Desktop for a log file named similar to "YAIO_YYYYMMDD.log" which details all the operations performed.
+
+What to Expect
+--------------
+    Real-Time Feedback:
+        As the script runs, it will display live updates (e.g., scanning progress with consistent three-dot animations) in the PowerShell window.
+
+    Comprehensive Logging:
+        All outputs are captured and stored in the log file for post-run review. This includes system stats, cleanup results, update details, and scan outcomes.
+
+    System Restart (If Required):
+        If updates are installed, you’ll receive a prompt at the end asking whether to restart your computer immediately or later. If no valid input is received, the system will auto-restart after a set time.
+
+Troubleshooting & Support
+-------------------------
+    Script Fails to Run:
+        - Ensure you are running PowerShell as an Administrator.
+        - Verify your system meets the minimum requirements (Windows 10+, PowerShell 5.1+).
+
+    Issues with Updates:
+        - Make sure you have a stable internet connection.
+        - Check the detailed log file for any error messages during the update process.
+
+    Feedback & Assistance:
+        This script is provided as a proof-of-concept tool. For suggestions, bug reports, or feedback, please contact the maintainer or submit your queries through your preferred support channel.
+
+Final Note
+----------
+YaugerAIO v1.2.1 is designed to simplify Windows maintenance and optimize system performance with a single, streamlined script. By automating routine tasks and providing thorough logging, it empowers you to keep your system in top shape without the hassle.
+
+Enjoy a smoother, more responsive Windows experience with YaugerAIO!
