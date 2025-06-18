@@ -81,4 +81,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.PSG_TOKEN }} 
+
+
+    # This CI/CD workflow will be updated later. This commit is primarly show-casing the PSG_Token which is repostory secret.,
