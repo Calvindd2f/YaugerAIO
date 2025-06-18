@@ -646,7 +646,7 @@ $wrappedThankYou = Wrap-Text -Text $thankYouMessage -Width 130
 Log $wrappedThankYou "Blue"
 Write-Host ""
 
-$feedbackMessage = "Check the log file on your desktop for details. For bugs or feedback, email rick.yauger@outlook.com."
+$feedbackMessage = "Check the log file on your desktop for details."
 $wrappedFeedback = Wrap-Text -Text $feedbackMessage -Width 130
 Log $wrappedFeedback "Blue"
 Write-Host ""
