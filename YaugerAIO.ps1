@@ -1,3 +1,21 @@
+<#PSScriptInfo
+
+.VERSION 1.2.2
+.GUID ed3b18c9-b76d-4ba2-b3b4-59b1bf8e2113
+.AUTHOR Rick Yauger
+.COMPANYNAME SoHo Integration, LLC
+.COPYRIGHT © Rick Yauger 2024
+.TAGS Maintenance Cleanup HealthCheck
+.LICENSEURI https://opensource.org/licenses/MIT
+.PROJECTURI https://github.com/yourgithub/yourrepo
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+Initial release to PowerShell Gallery.
+#>
+
 # Set console buffer and window size.
 $desiredWidth = 130
 $desiredHeight = 50
