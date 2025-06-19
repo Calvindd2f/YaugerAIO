@@ -9,7 +9,8 @@ $currentBuffer = $host.UI.RawUI.BufferSize
 try {
     $windowSize = New-Object System.Management.Automation.Host.Size($desiredWidth, [Math]::Min($desiredHeight, $currentBuffer.Height))
     $host.UI.RawUI.WindowSize = $windowSize
-} catch [System.Management.Automation.SetValueInvocationException] {
+}
+catch [System.Management.Automation.SetValueInvocationException] {
     # Silently continue if window size cannot be set
 }
 
@@ -17,7 +18,8 @@ try {
 try {
     $bufferSize = New-Object System.Management.Automation.Host.Size($desiredWidth, $desiredHeight)
     $host.UI.RawUI.BufferSize = $bufferSize
-} catch [System.Management.Automation.SetValueInvocationException] {
+}
+catch [System.Management.Automation.SetValueInvocationException] {
     # Silently continue if buffer size cannot be set
 }
 
@@ -30,9 +32,9 @@ Add-Type -AssemblyName System.Collections.Concurrent
 Add-Type -AssemblyName System.Security.Cryptography
 
 # Check if types already exist before adding them
-$existingTypes = [System.AppDomain]::CurrentDomain.GetAssemblies() | 
-    ForEach-Object { $_.GetTypes() } | 
-    Where-Object { $_.Name -in @('ThreadedFileProcessor', 'ThreadedHashCalculator') }
+$existingTypes = [System.AppDomain]::CurrentDomain.GetAssemblies() |
+ForEach-Object { $_.GetTypes() } |
+Where-Object { $_.Name -in @('ThreadedFileProcessor', 'ThreadedHashCalculator') }
 
 if (-not $existingTypes) {
     Add-Type @"
@@ -227,22 +229,22 @@ function Get-TempLockingProcesses {
         "fortnite"          = "Fortnite"
         "gog"               = "GOG Galaxy"
     }
-    
+
     # Use HashSet for unique process names
     $uniqueProcesses = New-Object System.Collections.Generic.HashSet[string]
     $result = @()
-    
+
     # Get processes in a single call and filter
     Get-Process | Where-Object { $commonAppsMapping.ContainsKey($_.ProcessName.ToLower()) } | ForEach-Object {
         $key = $_.ProcessName.ToLower()
         if ($uniqueProcesses.Add($key)) {
             $result += [PSCustomObject]@{
-                ProcessName = $key
+                ProcessName  = $key
                 FriendlyName = $commonAppsMapping[$key]
             }
         }
     }
-    
+
     return $result | Sort-Object FriendlyName
 }
 
@@ -310,10 +312,10 @@ function Show-Banner {
 $script:ErrorThreshold = 3
 $script:ErrorCount = 0
 $script:CircuitBreakerState = @{
-    IsOpen = $false
+    IsOpen          = $false
     LastFailureTime = $null
-    FailureCount = 0
-    CooldownPeriod = New-TimeSpan -Minutes 5
+    FailureCount    = 0
+    CooldownPeriod  = New-TimeSpan -Minutes 5
 }
 
 function Test-CircuitBreaker {
@@ -362,22 +364,22 @@ function Test-ValidPath {
 function Log-Error {
     param(
         [string]$Message,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorRecord]$ErrorRecord,
         [string]$Operation
     )
     $errorContext = @{
-        Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        Operation = $Operation
-        ErrorType = if ($ErrorRecord) { $ErrorRecord.Exception.GetType().Name } else { "Unknown" }
-        Message = $Message
+        Timestamp  = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        Operation  = $Operation
+        ErrorType  = if ($ErrorRecord) { $ErrorRecord.Exception.GetType().Name } else { "Unknown" }
+        Message    = $Message
         StackTrace = if ($ErrorRecord) { $ErrorRecord.ScriptStackTrace } else { "No stack trace available" }
     }
-    
+
     $errorLog = "[$($errorContext.Timestamp)] $($errorContext.Operation) - $($errorContext.ErrorType): $($errorContext.Message)"
     $script:log.Add($errorLog)
     Write-Host $errorLog -ForegroundColor Red
-    
+
     if ($script:DebugMode) {
         Write-Host "Stack Trace: $($errorContext.StackTrace)" -ForegroundColor DarkRed
     }
@@ -432,22 +434,22 @@ function Start-SafeProcess {
         }
 
         $process.WaitForExit()
-        
+
         if ($process.ExitCode -ne 0) {
             throw [System.ComponentModel.Win32Exception]::new($process.ExitCode, "Process exited with code $($process.ExitCode)")
         }
 
         return @{
             Success = $true
-            Output = $outputBuilder.ToString()
-            Error = $errorBuilder.ToString()
+            Output  = $outputBuilder.ToString()
+            Error   = $errorBuilder.ToString()
         }
     }
     catch {
         Log-Error "Failed to execute process: $FilePath" $_ "Start-SafeProcess"
         return @{
             Success = $false
-            Error = $_.Exception.Message
+            Error   = $_.Exception.Message
         }
     }
 }
@@ -455,7 +457,7 @@ function Start-SafeProcess {
 # --- Enhanced System Checks with Circuit Breaker ---
 function Check-SystemHealth {
     param([string]$Operation)
-    
+
     if (-not (Test-CircuitBreaker)) {
         Log "Circuit breaker is open. Skipping $Operation" "Yellow"
         return $false
@@ -466,40 +468,40 @@ function Check-SystemHealth {
             "DiskSpace" {
                 $disk = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID='${selectedDrive}'" -ErrorAction Stop
                 if ($null -eq $disk) { throw "Failed to retrieve disk information" }
-                
+
                 $freeGB = [math]::Round($disk.FreeSpace / 1GB, 2)
                 $totalGB = [math]::Round($disk.Size / 1GB, 2)
                 $freePercentage = [math]::Round(($disk.FreeSpace / $disk.Size) * 100, 2)
-                
+
                 Log "${selectedDrive} Drive Free Space: $freeGB GB out of $totalGB GB ($freePercentage% free)" "Cyan"
                 Update-CircuitBreaker $true
                 return $true
             }
-            
+
             "CPUUsage" {
                 $cpu = New-Object System.Diagnostics.PerformanceCounter("Processor", "% Processor Time", "_Total")
                 $cpu.NextValue() | Out-Null
                 $usage = [math]::Round($cpu.NextValue(), 2)
-                
+
                 Log "CPU Usage: $usage%" "Cyan"
                 Update-CircuitBreaker $true
                 return $true
             }
-            
+
             "RAMUsage" {
                 $os = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
                 if ($null -eq $os) { throw "Failed to retrieve OS information" }
-                
+
                 $total = [math]::Round($os.TotalVisibleMemorySize / 1MB, 2)
                 $free = [math]::Round($os.FreePhysicalMemory / 1MB, 2)
                 $used = [math]::Round($total - $free, 2)
                 $percentUsed = [math]::Round(($used / $total) * 100, 2)
-                
+
                 Log "RAM Usage: $used GB of $total GB ($percentUsed%)" "Cyan"
                 Update-CircuitBreaker $true
                 return $true
             }
-            
+
             default {
                 throw "Unknown operation: $Operation"
             }
@@ -538,10 +540,10 @@ function Remove-SafeFile {
 function Clear-BrowserCaches {
     try {
         $browserPaths = @{
-            "Chrome" = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache"
-            "Edge" = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache"
-            "Brave" = "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Cache"
-            "Opera" = @(
+            "Chrome"  = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache"
+            "Edge"    = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache"
+            "Brave"   = "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Cache"
+            "Opera"   = @(
                 "$env:LOCALAPPDATA\Opera Software\Opera Stable\Cache",
                 "$env:APPDATA\Opera Software\Opera Stable\Cache",
                 "$env:LOCALAPPDATA\Opera Software\Opera GX\Cache",
@@ -561,7 +563,7 @@ function Clear-BrowserCaches {
                 if ($paths -is [Array]) {
                     foreach ($path in $paths) {
                         if (Test-Path $path) {
-                            Get-ChildItem -Path $path -Recurse -ErrorAction Stop | 
+                            Get-ChildItem -Path $path -Recurse -ErrorAction Stop |
                             ForEach-Object -ThrottleLimit 100 -Parallel {
                                 try {
                                     if (Test-Path $_.FullName) {
@@ -587,7 +589,7 @@ function Clear-BrowserCaches {
                             foreach ($profile in $profiles) {
                                 $cache2Path = Join-Path $profile.FullName "cache2"
                                 $cachePath = Join-Path $profile.FullName "cache"
-                                if (Test-Path $cache2Path) { 
+                                if (Test-Path $cache2Path) {
                                     try {
                                         Remove-Item -Path $cache2Path -Force -ErrorAction Stop
                                     }
@@ -595,7 +597,7 @@ function Clear-BrowserCaches {
                                         $errors += "Failed to remove Firefox cache2: $($_.Exception.Message)"
                                     }
                                 }
-                                if (Test-Path $cachePath) { 
+                                if (Test-Path $cachePath) {
                                     try {
                                         Remove-Item -Path $cachePath -Force -ErrorAction Stop
                                     }
@@ -609,7 +611,7 @@ function Clear-BrowserCaches {
                     }
                     else {
                         if (Test-Path $paths) {
-                            Get-ChildItem -Path $paths -Recurse -ErrorAction Stop | 
+                            Get-ChildItem -Path $paths -Recurse -ErrorAction Stop |
                             ForEach-Object -ThrottleLimit 100 -Parallel {
                                 try {
                                     if (Test-Path $_.FullName) {
@@ -640,7 +642,7 @@ function Clear-BrowserCaches {
             $results += [PSCustomObject]@{
                 Browser = $browser
                 Success = $success
-                Errors = $errors
+                Errors  = $errors
             }
         }
 
@@ -804,7 +806,7 @@ function Install-WindowsUpdates {
         }
 
         Write-Host "Checking for Windows updates..." -ForegroundColor Cyan
-        
+
         # Use COM object for Windows Update with proper cleanup
         $updateSession = $null
         $updateSearcher = $null
@@ -817,24 +819,24 @@ function Install-WindowsUpdates {
             $updateSession = New-Object -ComObject Microsoft.Update.Session
             $updateSearcher = $updateSession.CreateUpdateSearcher()
             $searchResult = $updateSearcher.Search("IsInstalled=0 and Type='Software'")
-            
+
             if ($searchResult.Updates.Count -eq 0) {
                 Write-Host "Windows Updates are current." -ForegroundColor Green
                 Update-CircuitBreaker $true
                 return $true
             }
-            
+
             Write-Host "Updates found:" -ForegroundColor Gray
             $updatesToDownload = New-Object -ComObject Microsoft.Update.UpdateColl
-            
+
             # Process updates in parallel with proper error handling
             $updateResults = @()
             $searchResult.Updates | ForEach-Object -ThrottleLimit 10 -Parallel {
                 $update = $_
                 $result = @{
-                    Title = $update.Title
+                    Title   = $update.Title
                     Success = $true
-                    Error = $null
+                    Error   = $null
                 }
 
                 try {
@@ -851,22 +853,22 @@ function Install-WindowsUpdates {
 
                 $updateResults += $result
             }
-            
+
             if ($updatesToDownload.Count -gt 0) {
                 Write-Host "Downloading updates..." -ForegroundColor Cyan
                 $downloader = $updateSession.CreateUpdateDownloader()
                 $downloader.Updates = $updatesToDownload
                 $downloadResult = $downloader.Download()
-                
+
                 if ($downloadResult.ResultCode -ne 2) {
                     throw "Download failed with result code: $($downloadResult.ResultCode)"
                 }
-                
+
                 Write-Host "Installing updates..." -ForegroundColor Cyan
                 $installer = $updateSession.CreateUpdateInstaller()
                 $installer.Updates = $updatesToDownload
                 $installationResult = $installer.Install()
-                
+
                 Write-Host "Updates Installed: $($installationResult.UpdatesInstalled)" -ForegroundColor Gray
                 if ($installationResult.RebootRequired) {
                     $script:needsRestart = $true
@@ -915,7 +917,7 @@ function Run-DISMCheckHealth {
         $dismOutput = $result.Output
         $dismOutputLines = $dismOutput -split "`n"
         $script:log.Add("DISM /CheckHealth Output:`n" + ($dismOutputLines -join "`n") + "`n")
-        
+
         Write-Host ""
         if ($dismOutput -match "No component store corruption detected") {
             Write-Host "No component store corruption found, so we're moving onto the SFC Scan." -ForegroundColor Yellow
@@ -1002,8 +1004,8 @@ function Get-WindowsTempSize {
             throw [System.IO.DirectoryNotFoundException]::new("Invalid temp path: $tempPath")
         }
 
-        $files = Get-ChildItem -Path $tempPath -Recurse -ErrorAction SilentlyContinue | 
-                 Where-Object { $_.PSIsContainer -eq $false }
+        $files = Get-ChildItem -Path $tempPath -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.PSIsContainer -eq $false }
 
         $results = Process-FilesWithHash -Files $files.FullName -MaxThreads 10 -BatchSize 1000
 
@@ -1042,7 +1044,7 @@ function Clear-WindowsTemp {
         $successCount = 0
 
         # Delete files in parallel with error handling
-        Get-ChildItem -Path $tempPath -Recurse -ErrorAction SilentlyContinue | 
+        Get-ChildItem -Path $tempPath -Recurse -ErrorAction SilentlyContinue |
         Where-Object { $_.PSIsContainer -eq $false } |
         ForEach-Object -ThrottleLimit 100 -Parallel {
             try {
@@ -1151,8 +1153,8 @@ function Start-PerformanceMonitoring {
             # CPU Usage
             $cpu = Get-CimInstance -ClassName Win32_Processor | Select-Object -First 1
             $metrics += [PSCustomObject]@{
-                Name = "CPU"
-                Value = $cpu.LoadPercentage
+                Name      = "CPU"
+                Value     = $cpu.LoadPercentage
                 Timestamp = Get-Date
             }
 
@@ -1163,8 +1165,8 @@ function Start-PerformanceMonitoring {
             $usedMemory = $totalMemory - $freeMemory
             $memoryUsage = [math]::Round(($usedMemory / $totalMemory) * 100, 2)
             $metrics += [PSCustomObject]@{
-                Name = "Memory"
-                Value = $memoryUsage
+                Name      = "Memory"
+                Value     = $memoryUsage
                 Timestamp = Get-Date
             }
 
@@ -1174,8 +1176,8 @@ function Start-PerformanceMonitoring {
             $totalSpace = [math]::Round($disk.Size / 1GB, 2)
             $diskUsage = [math]::Round((($totalSpace - $freeSpace) / $totalSpace) * 100, 2)
             $metrics += [PSCustomObject]@{
-                Name = "Disk"
-                Value = $diskUsage
+                Name      = "Disk"
+                Value     = $diskUsage
                 Timestamp = Get-Date
             }
         }
@@ -1203,10 +1205,10 @@ function Process-FilesWithHash {
 
     try {
         $processTask = $processor.ProcessFilesAsync($Files, {
-            param($file)
-            $fileInfo = [System.IO.FileInfo]$file
-            $processor._fileStats.TryAdd($file, ($fileInfo.Length, $fileInfo.LastAccessTime))
-        })
+                param($file)
+                $fileInfo = [System.IO.FileInfo]$file
+                $processor._fileStats.TryAdd($file, ($fileInfo.Length, $fileInfo.LastAccessTime))
+            })
 
         $hashTask = $hasher.CalculateHashesAsync($Files)
 
@@ -1225,8 +1227,8 @@ function Process-FilesWithHash {
 
     return @{
         FileStats = $fileStatsDict
-        Hashes = $hasher.GetHashes()
-        Errors = $processor._errors.ToArray()
+        Hashes    = $hasher.GetHashes()
+        Errors    = $processor._errors.ToArray()
     }
 }
 
@@ -1240,13 +1242,13 @@ function Get-SystemHealthThreaded {
 
         $errors = New-Object System.Collections.Generic.List[string]
         $tasks = @{
-            "Processes" = {
+            "Processes"   = {
                 Start-ProcessMonitoring -ProcessNames @("chrome", "firefox", "msedge") -DurationSeconds 5
             }
-            "Disk" = {
+            "Disk"        = {
                 Start-DiskAnalysis -DrivePath $selectedDrive
             }
-            "Network" = {
+            "Network"     = {
                 Start-NetworkMonitoring -DurationSeconds 5
             }
             "Performance" = {

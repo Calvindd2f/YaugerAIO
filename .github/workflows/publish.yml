@@ -3,9 +3,8 @@ name: Publish to PowerShell Gallery
 on:
   push:
     branches:
-      - main
+      - dev
     tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -39,12 +38,12 @@ jobs:
           $manifestPath = ".\YaugerAIO.psd1"
           $manifest = Import-PowerShellDataFile $manifestPath
           $version = $manifest.ModuleVersion
-          
+
           # If this is a tag push, use the tag version
           if ($env:GITHUB_REF.StartsWith('refs/tags/v')) {
             $version = $env:GITHUB_REF.Replace('refs/tags/v', '')
           }
-          
+
           # Update the manifest version
           $content = Get-Content $manifestPath -Raw
           $content = $content -replace "ModuleVersion = '.*'", "ModuleVersion = '$version'"
@@ -53,7 +52,7 @@ jobs:
       - name: Publish to PowerShell Gallery
         shell: pwsh
         env:
-          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+          PSGALLERY_API_KEY: ${{ secrets.PSG_TOKEN }}
         run: |
           $publishParams = @{
             Path = "."
@@ -61,7 +60,7 @@ jobs:
             Repository = "PSGallery"
             Force = $true
           }
-          
+
           Publish-Module @publishParams
 
       - name: Create Release
@@ -71,12 +70,12 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             ## Changes in this release
-            
+
             - Initial release of YaugerAIO
             - Comprehensive system maintenance and optimization tools
             - Enhanced error handling and performance monitoring
             - Threaded operations for better performance
-            
+
             For detailed information, please visit the [project page](https://github.com/yourGraytools/YaugerAIO).
           draft: false
           prerelease: false
