@@ -15,7 +15,7 @@
     CompanyName = 'Rick Yauger'
 
     # Copyright statement for this module
-    Copyright = '(c) 2024 Rick Yauger. All rights reserved.'
+    Copyright = '(c) 2025 Rick Yauger. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description = 'A comprehensive Windows system maintenance and optimization tool'
@@ -65,4 +65,4 @@
             ReleaseNotes = 'Initial release of YaugerAIO'
         }
     }
-} 
+}
