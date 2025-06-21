@@ -173,69 +173,69 @@ class YaugerWorkflowManager {
         # Define the workflow tasks
         $workflowTasks = @(
             @{
-                name = "Rebuild Registry Index"
-                description = "Rebuild the registry index using regsvr32"
-                scriptPath = "Public\fastchecks.ps1"
+                name         = "Rebuild Registry Index"
+                description  = "Rebuild the registry index using regsvr32"
+                scriptPath   = "Public\fastchecks.ps1"
                 functionName = "RebuildRegistryIndex"
-                parameters = @{}
-                isEnabled = $true
-                priority = 1
-                category = "Registry"
+                parameters   = @{}
+                isEnabled    = $true
+                priority     = 1
+                category     = "Registry"
                 dependencies = ""
             },
             @{
-                name = "Rebuild Windows Search Index"
-                description = "Rebuild Windows Search Index"
-                scriptPath = "Public\fastchecks.ps1"
+                name         = "Rebuild Windows Search Index"
+                description  = "Rebuild Windows Search Index"
+                scriptPath   = "Public\fastchecks.ps1"
                 functionName = "RebuildWSearchIndex"
-                parameters = @{}
-                isEnabled = $true
-                priority = 2
-                category = "Search"
+                parameters   = @{}
+                isEnabled    = $true
+                priority     = 2
+                category     = "Search"
                 dependencies = ""
             },
             @{
-                name = "Check Hibernation"
-                description = "Check hibernation status"
-                scriptPath = "Public\fastchecks.ps1"
+                name         = "Check Hibernation"
+                description  = "Check hibernation status"
+                scriptPath   = "Public\fastchecks.ps1"
                 functionName = "CheckHibernation"
-                parameters = @{}
-                isEnabled = $true
-                priority = 3
-                category = "Power"
+                parameters   = @{}
+                isEnabled    = $true
+                priority     = 3
+                category     = "Power"
                 dependencies = ""
             },
             @{
-                name = "Disable Fast Boot"
-                description = "Disable Fast Boot feature"
-                scriptPath = "Public\fastchecks.ps1"
+                name         = "Disable Fast Boot"
+                description  = "Disable Fast Boot feature"
+                scriptPath   = "Public\fastchecks.ps1"
                 functionName = "DisableFastBoot"
-                parameters = @{}
-                isEnabled = $true
-                priority = 4
-                category = "Power"
+                parameters   = @{}
+                isEnabled    = $true
+                priority     = 4
+                category     = "Power"
                 dependencies = ""
             },
             @{
-                name = "Reset Page File"
-                description = "Reset page file to system managed"
-                scriptPath = "Public\fastchecks.ps1"
+                name         = "Reset Page File"
+                description  = "Reset page file to system managed"
+                scriptPath   = "Public\fastchecks.ps1"
                 functionName = "ResetPageFile"
-                parameters = @{ Force = $false }
-                isEnabled = $true
-                priority = 5
-                category = "Memory"
+                parameters   = @{ Force = $false }
+                isEnabled    = $true
+                priority     = 5
+                category     = "Memory"
                 dependencies = ""
             },
             @{
-                name = "Disk Cleanup"
-                description = "Perform disk cleanup"
-                scriptPath = if ($this.fastMode) { "Public\diskcleanup_fastmode.ps1" } else { "Public\diskcleanup.ps1" }
+                name         = "Disk Cleanup"
+                description  = "Perform disk cleanup"
+                scriptPath   = if ($this.fastMode) { "Public\diskcleanup_fastmode.ps1" } else { "Public\diskcleanup.ps1" }
                 functionName = if ($this.fastMode) { "Start-DiskCleanupFastMode" } else { "Start-DiskCleanup" }
-                parameters = @{}
-                isEnabled = $true
-                priority = 6
-                category = "Storage"
+                parameters   = @{}
+                isEnabled    = $true
+                priority     = 6
+                category     = "Storage"
                 dependencies = ""
             }
         )
@@ -269,7 +269,7 @@ class YaugerWorkflowManager {
 
         try {
             Write-Host "Executing: $($workflowTask.name)" -ForegroundColor Cyan
-            
+
             # Load the script if it exists
             $scriptFullPath = Join-Path $this.modulePath $workflowTask.scriptPath
             if (Test-Path $scriptFullPath) {
@@ -282,7 +282,8 @@ class YaugerWorkflowManager {
                 $result = & $functionName @($workflowTask.parameters.GetEnumerator() | ForEach-Object { $_.Value })
                 $task.isSuccess = $true
                 Write-Host "OK Completed: $($workflowTask.name)" -ForegroundColor Green
-            } else {
+            }
+            else {
                 throw "Function $functionName not found"
             }
         }
@@ -290,7 +291,7 @@ class YaugerWorkflowManager {
             $task.isFailed = $true
             $task.errorMessage = $_.Exception.Message
             Write-Host "FAIL Failed: $($workflowTask.name) - $($_.Exception.Message)" -ForegroundColor Red
-            
+
             if (-not $this.continueOnError) {
                 throw
             }
@@ -339,7 +340,7 @@ class YaugerWorkflowManager {
     [void] CaptureStorageMetrics([string]$phase) {
         try {
             Write-Host "Capturing storage metrics ($phase)..." -ForegroundColor Cyan
-            
+
             # Import the storage info module
             $storageScriptPath = Join-Path $this.modulePath "Private\FileStorageInfo.ps1"
             if (Test-Path $storageScriptPath) {
@@ -348,17 +349,35 @@ class YaugerWorkflowManager {
 
             # Get storage information
             $storageInfo = Get-FileStorageInfo
-            
+
             $metric = [metrics]::new()
             $metric.timestamp = Get-Date
-            
-            # Extract storage information from the output
+
+            # Extract storage information from the output with better error handling
             if ($storageInfo -and $storageInfo.out) {
-                $metric.storageTotalGB = "0" # Will be calculated
-                $metric.storageFreeGB = [math]::Round($storageInfo.out.freeSpace / 1GB, 2).ToString()
-                $metric.storageUsedGB = "0" # Will be calculated
-                $metric.storageFreePercent = "0" # Will be calculated
-                $metric.storageUsedPercent = "0" # Will be calculated
+                # Get system drive info directly as fallback
+                $systemDrive = Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'" -ErrorAction SilentlyContinue
+                if ($systemDrive) {
+                    $metric.storageTotalGB = [math]::Round($systemDrive.Size / 1GB, 2).ToString()
+                    $metric.storageFreeGB = [math]::Round($systemDrive.FreeSpace / 1GB, 2).ToString()
+                    $metric.storageUsedGB = [math]::Round(($systemDrive.Size - $systemDrive.FreeSpace) / 1GB, 2).ToString()
+                    $metric.storageFreePercent = [math]::Round(($systemDrive.FreeSpace / $systemDrive.Size) * 100, 2).ToString()
+                    $metric.storageUsedPercent = [math]::Round((($systemDrive.Size - $systemDrive.FreeSpace) / $systemDrive.Size) * 100, 2).ToString()
+                } else {
+                    # Set default values if we can't get drive info
+                    $metric.storageTotalGB = "0"
+                    $metric.storageFreeGB = "0"
+                    $metric.storageUsedGB = "0"
+                    $metric.storageFreePercent = "0"
+                    $metric.storageUsedPercent = "0"
+                }
+            } else {
+                # Set default values if storage info is not available
+                $metric.storageTotalGB = "0"
+                $metric.storageFreeGB = "0"
+                $metric.storageUsedGB = "0"
+                $metric.storageFreePercent = "0"
+                $metric.storageUsedPercent = "0"
             }
 
             $this.repository.AddMetrics($metric)
@@ -376,20 +395,32 @@ class YaugerWorkflowManager {
             # Generate computer performance report
             $perfReportPath = Join-Path $this.modulePath "Public\computer_perf_report.ps1"
             if (Test-Path $perfReportPath) {
-                . $perfReportPath
-                # Assuming there's a function to generate the report
-                if (Get-Command "Generate-ComputerPerformanceReport" -ErrorAction SilentlyContinue) {
-                    & "Generate-ComputerPerformanceReport" -Repository $this.repository
+                try {
+                    . $perfReportPath
+                    # Check if function exists before calling
+                    if (Get-Command "Generate-ComputerPerformanceReport" -ErrorAction SilentlyContinue) {
+                        & "Generate-ComputerPerformanceReport" -Repository $this.repository -ErrorAction Stop
+                    } else {
+                        Write-Host "Performance report function not found, skipping..." -ForegroundColor Yellow
+                    }
+                } catch {
+                    Write-Host "Warning: Could not generate performance report: $($_.Exception.Message)" -ForegroundColor Yellow
                 }
             }
 
             # Generate computer space cleanup report
             $spaceReportPath = Join-Path $this.modulePath "Public\computer_space_cleanup_report.ps1"
             if (Test-Path $spaceReportPath) {
-                . $spaceReportPath
-                # Assuming there's a function to generate the report
-                if (Get-Command "Generate-ComputerSpaceCleanupReport" -ErrorAction SilentlyContinue) {
-                    & "Generate-ComputerSpaceCleanupReport" -Repository $this.repository
+                try {
+                    . $spaceReportPath
+                    # Check if function exists before calling
+                    if (Get-Command "Generate-ComputerSpaceCleanupReport" -ErrorAction SilentlyContinue) {
+                        & "Generate-ComputerSpaceCleanupReport" -Repository $this.repository -ErrorAction Stop
+                    } else {
+                        Write-Host "Space cleanup report function not found, skipping..." -ForegroundColor Yellow
+                    }
+                } catch {
+                    Write-Host "Warning: Could not generate space cleanup report: $($_.Exception.Message)" -ForegroundColor Yellow
                 }
             }
 
@@ -444,13 +475,13 @@ class YaugerInterface {
         $successfulTasks = $this.repository.GetSuccessfulTasks()
 
         return @{
-            TotalTasks = $tasks.Count
-            SuccessfulTasks = $successfulTasks.Count
-            FailedTasks = $failedTasks.Count
-            SkippedTasks = ($tasks | Where-Object { $_.isSkipped }).Count
-            SessionId = $this.repository.sessionId
+            TotalTasks       = $tasks.Count
+            SuccessfulTasks  = $successfulTasks.Count
+            FailedTasks      = $failedTasks.Count
+            SkippedTasks     = ($tasks | Where-Object { $_.isSkipped }).Count
+            SessionId        = $this.repository.sessionId
             SessionStartTime = $this.repository.sessionStartTime
-            SessionDuration = (Get-Date) - $this.repository.sessionStartTime
+            SessionDuration  = (Get-Date) - $this.repository.sessionStartTime
         }
     }
 }

@@ -264,7 +264,7 @@ function Test-YaugerAIOSystem {
 }
 
 # Export functions
-Export-ModuleMember -Function Start-YaugerAIOWorkflow, Get-YaugerAIOStatus, Test-YaugerAIOSystem
+#Export-ModuleMember -Function Start-YaugerAIOWorkflow, Get-YaugerAIOStatus, Test-YaugerAIOSystem
 
 # Example usage (commented out)
 <#
