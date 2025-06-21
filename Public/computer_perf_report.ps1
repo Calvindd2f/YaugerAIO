@@ -623,4 +623,3 @@ function ComputerPerformanceReport {
     }
 }
 
-& { . .\Public\computer_perf_report.ps1; ComputerPerformanceReport | ConvertTo-Json -Depth 100 -AsArray }
