@@ -1,26 +1,1069 @@
 **********************
 PowerShell transcript start
 Start time: 20250621034312
-Username: CALVIN\calvi
-RunAs User: CALVIN\calvi
-Configuration Name: 
-Machine: CALVIN (Microsoft Windows NT 10.0.26100.0)
-Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\calvi\.cursor\extensions\ms-vscode.powershell-2025.0.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.0.0' -BundledModulesPath 'c:\Users\calvi\.cursor\extensions\ms-vscode.powershell-2025.0.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.0.0
+Username: CALvIN\calvi
+RunAs User: CALvIN\calvi
+Configuration Name:
+Machine: CALvIN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\[REDACTED]\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName '[REDACTED]' -HostProfileId '[REDACTED]' -Hostversion '2025.0.0' -BundledModulesPath 'c:\Users\[REDACTED]\ms-vscode.powershell-2025.0.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.0.0
 Copyright (c) Microsoft Corporation.
 
-https://aka.ms/vscode-powershell
-Type 'help' to get help.
-" -LogLevel 'Warning' -LogPath 'c:\Users\calvi\AppData\Roaming\Cursor\logs\20250620T193237\window2\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\calvi\AppData\Roaming\Cursor\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-27224-259618.json' -FeatureFlags @() 
 Process ID: 31304
-PSVersion: 7.5.1
+PSversion: 7.5.1
 PSEdition: Core
 GitCommitId: 7.5.1
 OS: Microsoft Windows 10.0.26100
 Platform: Win32NT
-PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
-PSRemotingProtocolVersion: 2.3
-SerializationVersion: 1.1.0.1
-WSManStackVersion: 3.0
+PSCompatibleversions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolversion: 2.3
+Serializationversion: 1.1.0.1
+WSManStackversion: 3.0
 **********************
 Transcript started, output file is yaugerrun_calvindd2f_example.log
-]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5ccalvi\x5cSource\x5cYaugerAIOPS C:\Users\calvi\Source\YaugerAIO> ]633;B
+
+
+PS>ipmo .\YaugerAIO-Main.ps1
+PS>clear
+PS>. .\Example-Usage.ps1
+=== YaugerAIO Data Management System - Example Usage ===
+
+Example 1: Basic Workflow Execution
+This will run the workflow in fast mode with error continuation enabled.
+
+=== YaugerAIO Data Management System ===
+Initializing workflow...
+Configuration:
+  Fast Mode: True
+  Continue on Error: True
+  Generate Reports: True
+
+Starting YaugerAIO Workflow...
+Mode: Fast
+Continue on Error: Yes
+
+Capturing storage metrics (Before)...
+[...snip...]
+      PS>TerminatingError(): "The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object."
+      FAIL Failed to capture storage metrics (Before): The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+[...snip...] This has been resolved in PR #3
+Executing: Rebuild Registry Index
+OK Completed: Rebuild Registry Index
+Executing: Rebuild Windows Search Index
+Set-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:10:5
+[...snip...]
+      Line |
+        10 |      Set-Service WSearch -StartupType disabled
+          |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          | Service 'Windows Search (WSearch)' cannot be configured due to the following error: Access is denied.
+Stop-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:11:5
+[...snip...]
+[...snip...]
+      Line |
+        11 |      Stop-Service wsearch
+          |      ~~~~~~~~~~~~~~~~~~~~
+          | Service 'Windows Search (wsearch)' cannot be stopped due to the following error: Cannot open 'wsearch' service on computer '.'.
+[...snip...]
+Remove-Item: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:12:5
+[...snip...]
+      Line |
+        12 |      Remove-Item $CurrentLoc.DataDirectory -Force -Confirm:$false -Rec …
+          |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          | Access to the path 'C:\ProgramData\Microsoft\Search\Data' is denied.
+[...snip...]
+Set-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:13:5
+[...snip...]
+      Line |
+        13 |      Set-Service WSearch -StartupType Automatic
+          |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          | Service 'Windows Search (WSearch)' cannot be configured due to the following error: Access is denied.
+[...snip...]
+Start-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:14:5
+[...snip...]
+      Line |
+        14 |      Start-Service WSearch
+          |      ~~~~~~~~~~~~~~~~~~~~~
+          | Service 'Windows Search (WSearch)' cannot be started due to the following error: Cannot open 'WSearch' service on computer '.'.
+[...snip...]
+OK Completed: Rebuild Windows Search Index
+Executing: Check Hibernation
+
+[...snip... This has been resolved in PR #3]
+      Get-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:19:20
+      Line |
+        19 |  … bernation = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Co …
+          |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          | Property HibernateEnabled does not exist at path HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power.
+[...snip...]
+
+Hibernation is disabled.
+OK Completed: Check Hibernation
+Executing: Disable Fast Boot
+ERROR: Access is denied.
+Fastboot Disabled
+OK Completed: Disable Fast Boot
+Executing: Reset Page File
+
+[...snip...]
+             PS>TerminatingError(ResetPageFile): "A positional parameter cannot be found that accepts argument 'System.Object[]'."
+[...snip...]
+
+FAIL Failed: Reset Page File - A positional parameter cannot be found that accepts argument 'System.Object[]'.
+Executing: Disk Cleanup
+Disk Cleanup Tool (06/21/2025 03:47:22)
+=======================================
+Windows version: Microsoft Windows 11 Pro [10.0.26100.4351]
+Device Name:     CALvIN
+Home Drive:      C:
+Running From:    C:\Users\calvi\v\YaugerAIO
+---------------------------------------
+: Clear Prefetch:
+: Clear Minidumps:
+: Clear Update Cache:
+: Clear DRMM Packages:
+: Clear Browser Caches: False (Cookies are always preserved)
+: Clear Win Error Logs:
+: Empty Recycle Bin:    False
+---------------------------------------
+: Statistics for Drive C:
+- Free Space: 313.03 GB
+- Used Space: 568.49 GB
+- % Free:     35.51%
+- (Was:       35.06%)
+=======================================
+Set-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\diskcleanup_fastmode.ps1:155:5
+
+[...snip...] This has been resolved in PR #3
+            Line |
+            155 |      Set-ItemProperty "HKLM:\Software\v" -Name SGLCleanup -v …
+                |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                | Cannot find path 'HKLM:\Software\v' because it does not exist.
+[...snip...]
+
+: Account Name:      C:\WINDOWS\system32\config\systemprofile
+: Account Type:      LocalSystem
+: valid for Cleanup: NO
+------
+: Account Name:      C:\WINDOWS\ServiceProfiles\LocalService
+: Account Type:      NT Authority
+: valid for Cleanup: NO
+------
+: Account Name:      C:\WINDOWS\ServiceProfiles\NetworkService
+: Account Type:      NetworkService
+: valid for Cleanup: NO
+------
+: Account Name:      C:\Users\calvi
+: Account Type:      User [Local]
+: valid for Cleanup: YES
+------
+- The following user directories' temporary data will be cleared:
+: C:\Users\calvi
+=======================================
+: User: C:\Users\calvi
+- Clearing local temporary data
+: Not clearing Windows Error Reporting logs [User]
+: Not clearing Browser caches
+------
+- Finished clearing per-user data.
+=======================================
+: Not emptying Recycle Bin/s
+- Clearing Temp directory
+: Not clearing PreFetch
+: Not clearing Windows Update cache
+: Not clearing Minidumps
+: Not clearing Packages Folder
+: Not clearing Windows Error Reporting logs [Global]
+=======================================
+- Disk cleanup completed!
+: Statistics for Drive C:
+- Free Space: 313.03 GB
+- Used Space: 568.49 GB
+- % Free:     35.51%
+- (Was:       35.06%)
+- A deletion log has been written to StdErr.
+  It has also been saved locally at C:\ProgramData\\Temp\RMMDC-1750474042.txt.
+
+[...snip...]  The Issues cuasing this were since resolved. specifically the depth call overflow.
+  PS>TerminatingError(Out-File): "Could not find a part of the path 'C:\ProgramData\v\Temp\RMMDC-1750474042.txt'."
+  >> TerminatingError(Out-File): "Could not find a part of the path 'C:\ProgramData\v\Temp\RMMDC-1750474042.txt'."
+[...snip...]
+
+FAIL Failed: Disk Cleanup - Could not find a part of the path 'C:\ProgramData\v\Temp\RMMDC-1750474042.txt'.
+Capturing storage metrics (After)...
+
+  [...snip...]
+    PS>TerminatingError(): "The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object."
+  [...snip...]
+
+FAIL Failed to capture storage metrics (After): The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+Generating reports...
+
+  [...snip...]
+      PS>TerminatingError(): "The script failed due to call depth overflow."
+  [...snip...]
+
+FAIL Failed to generate reports: The script failed due to call depth overflow.
+Workflow completed!
+
+=== Workflow Summary ===
+Session ID: 873b6b80-b71a-4869-8959-67c28d0dce3d
+Total Tasks: 6
+Successful: 4
+Failed: 2
+Skipped: 0
+Duration: 00:00:04
+
+=== Task Details ===
+  OK Rebuild Registry Index (00:00)
+  OK Rebuild Windows Search Index (00:00)
+  OK Check Hibernation (00:00)
+  OK Disable Fast Boot (00:00)
+  FAIL Reset Page File (00:00)
+  FAIL Disk Cleanup (00:01)
+
+Workflow completed successfully!
+Workflow completed with results:
+  Total Tasks: 6
+  Successful: 4
+  Failed: 2
+
+Press any key to continue to the next example...
+
+Example 2: System Status Check
+This will display current system information and storage status.
+
+=== YaugerAIO System Status ===
+System Information:
+  OS: Microsoft Windows 11 Pro 64-bit
+  Computer: CALvIN
+  Total Memory: 31.84 GB
+
+Storage Information:
+  Drive C::
+    Total: 881.52 GB
+    Used: 568.49 GB
+    Free: 313.03 GB (35.5%)
+  Drive D::
+    Total: 223.57 GB
+    Used: 185.28 GB
+    Free: 38.29 GB (17.1%)
+  Drive E::
+    Total: 11.77 GB
+    Used: 5.62 GB
+    Free: 6.15 GB (52.3%)
+  Drive F::
+    Total: 238.46 GB
+    Used: 107.84 GB
+    Free: 130.62 GB (54.8%)
+  Drive G::
+    Total: 243.16 GB
+    Used: 157.08 GB
+    Free: 86.08 GB (35.4%)
+  Drive H::
+    Total: 222.59 GB
+    Used: 140.95 GB
+    Free: 81.64 GB (36.7%)
+  Drive K::
+    Total: 465.74 GB
+    Used: 371.79 GB
+    Free: 93.95 GB (20.2%)
+
+Recent High-Memory Processes:
+  v 642.5 MB
+  v 538.3 MB
+  brave: 527.4 MB
+  brave: 509.8 MB
+  pwsh: 475.8 MB
+
+Press any key to continue to the next example...
+
+Example 3: System Testing
+This will test all system components to ensure they're working correctly.
+
+=== YaugerAIO System Test ===
+Testing class instantiation...
+OK Repository class instantiated
+OK Interface class instantiated
+Testing script availability...
+OK Public\fastchecks.ps1 found
+OK Private\DebugInfo.ps1 found
+OK Private\FileStorageInfo.ps1 found
+Testing function loading...
+OK Function RebuildRegistryIndex loaded
+OK Function CheckHibernation loaded
+OK Function DisableFastBoot loaded
+Testing disk space...
+OK System Drive has 313.03 GB free space
+
+System test completed!
+
+Press any key to continue to the next example...
+
+Example 4: Direct Class Usage
+This demonstrates how to use the classes directly for custom workflows.
+
+OK Repository created with Session ID: e5d4adba-3a37-43c2-bfd4-bc1cbd4ab9e6
+OK Workflow manager created
+OK Configuration set (Fast Mode: True, Continue on Error: True)
+OK Workflow tasks initialized
+OK Found 6 workflow tasks:
+  - Rebuild Registry Index (Priority: 1, Category: Registry)
+  - Rebuild Windows Search Index (Priority: 2, Category: Search)
+  - Check Hibernation (Priority: 3, Category: Power)
+  - Disable Fast Boot (Priority: 4, Category: Power)
+  - Reset Page File (Priority: 5, Category: Memory)
+  - Disk Cleanup (Priority: 6, Category: Storage)
+OK Custom task added to repository
+OK Repository now contains 1 tasks
+
+Press any key to continue to the next example...
+
+Example 5: Full Workflow with Custom Interface
+This demonstrates using the YaugerInterface class for complete workflow management.
+
+OK YaugerInterface created
+Starting workflow...
+Starting YaugerAIO Workflow...
+Mode: Fast
+Continue on Error: Yes
+Capturing storage metrics (Before)...
+
+[...snip...]
+  PS>TerminatingError(): "The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object."
+[...snip...]
+
+FAIL Failed to capture storage metrics (Before): The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+Executing: Rebuild Registry Index
+OK Completed: Rebuild Registry Index
+Executing: Rebuild Windows Search Index
+[...snip...]
+Set-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:10:5
+Line |
+  10 |      Set-Service WSearch -StartupType disabled
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (WSearch)' cannot be configured due to the following error: Access is denied.
+Stop-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:11:5
+Line |
+  11 |      Stop-Service wsearch
+     |      ~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (wsearch)' cannot be stopped due to the following error: Cannot open 'wsearch' service on computer '.'.
+Remove-Item: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:12:5
+Line |
+  12 |      Remove-Item $CurrentLoc.DataDirectory -Force -Confirm:$false -Rec …
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Access to the path 'C:\ProgramData\Microsoft\Search\Data' is denied.
+Set-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:13:5
+Line |
+  13 |      Set-Service WSearch -StartupType Automatic
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (WSearch)' cannot be configured due to the following error: Access is denied.
+Start-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:14:5
+Line |
+  14 |      Start-Service WSearch
+     |      ~~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (WSearch)' cannot be started due to the following error: Cannot open 'WSearch' service on computer '.'.
+[...snip...]
+
+OK Completed: Rebuild Windows Search Index
+Executing: Check Hibernation
+
+[...snip...]
+Get-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:19:20
+Line |
+  19 |  … bernation = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Co …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Property HibernateEnabled does not exist at path HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power.
+[...snip...]
+
+Hibernation is disabled.
+OK Completed: Check Hibernation
+Executing: Disable Fast Boot
+ERROR: Access is denied.
+Fastboot Disabled
+OK Completed: Disable Fast Boot
+Executing: Reset Page File
+
+[...snip...]
+  PS>TerminatingError(ResetPageFile): "A positional parameter cannot be found that accepts argument 'System.Object[]'."
+[...snip...]
+
+FAIL Failed: Reset Page File - A positional parameter cannot be found that accepts argument 'System.Object[]'.
+
+[...snip...]
+  PS>TerminatingError(): "The script failed due to call depth overflow."
+  
+  
+[...snip...]
+
+FAIL Failed to generate reports: The script failed due to call depth overflow.
+
+Workflow completed!
+OK Workflow completed!
+  Session ID: 7a9b7a70-550a-4639-8719-e7cbaf62574e
+  Duration: 00:00:04
+  Tasks: 6 total, 4 successful, 2 failed
+
+Task Details:
+  OK Rebuild Registry Index - Registry (00:00)
+  OK Rebuild Windows Search Index - Search (00:00)
+  OK Check Hibernation - Power (00:00)
+  OK Disable Fast Boot - Power (00:00)
+  FAIL Reset Page File - Memory (00:00)
+  FAIL Disk Cleanup - Storage (00:00)
+OK Session cleared
+
+=== Example Usage Complete ===
+All examples have been demonstrated successfully!
+
+Key Features Demonstrated:
+  OK Repository Pattern for data management
+  OK Workflow orchestration with task prioritization
+  OK Error handling and continuation options
+  OK Metrics tracking and comparison
+  OK Comprehensive reporting and logging
+  OK Modular and extensible architecture
+
+The system is now ready for production use!
+
+PS>. .\run-workflow.ps1
+=== YaugerAIO Workflow Test ===
+Classes imported successfully
+Interface created successfully
+Starting workflow...
+Starting YaugerAIO Workflow...
+Mode: Fast
+Continue on Error: Yes
+
+Capturing storage metrics (Before)...
+FAIL Failed to capture storage metrics (Before): The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+Executing: Rebuild Registry Index
+OK Completed: Rebuild Registry Index
+Executing: Rebuild Windows Search Index
+Set-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:10:5
+Line |
+  10 |      Set-Service WSearch -StartupType disabled
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (WSearch)' cannot be configured due to the following error: Access is denied.
+Stop-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:11:5
+Line |
+  11 |      Stop-Service wsearch
+     |      ~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (wsearch)' cannot be stopped due to the following error: Cannot open 'wsearch' service on computer '.'.
+Remove-Item: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:12:5
+Line |
+  12 |      Remove-Item $CurrentLoc.DataDirectory -Force -Confirm:$false -Rec …
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Access to the path 'C:\ProgramData\Microsoft\Search\Data' is denied.
+Set-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:13:5
+Line |
+  13 |      Set-Service WSearch -StartupType Automatic
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (WSearch)' cannot be configured due to the following error: Access is denied.
+Start-Service: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:14:5
+Line |
+  14 |      Start-Service WSearch
+     |      ~~~~~~~~~~~~~~~~~~~~~
+     | Service 'Windows Search (WSearch)' cannot be started due to the following error: Cannot open 'WSearch' service on computer '.'.
+OK Completed: Rebuild Windows Search Index
+Executing: Check Hibernation
+Get-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\fastchecks.ps1:19:20
+Line |
+  19 |  … bernation = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Co …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Property HibernateEnabled does not exist at path HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power.
+Hibernation is disabled.
+OK Completed: Check Hibernation
+Executing: Disable Fast Boot
+ERROR: Access is denied.
+Fastboot Disabled
+OK Completed: Disable Fast Boot
+Executing: Reset Page File
+PS>TerminatingError(ResetPageFile): "A positional parameter cannot be found that accepts argument 'System.Object[]'."
+FAIL Failed: Reset Page File - A positional parameter cannot be found that accepts argument 'System.Object[]'.
+Executing: Disk Cleanup
+Disk Cleanup Tool (06/21/2025 03:48:19)
+=======================================
+Windows version: Microsoft Windows 11 Pro [10.0.26100.4351]
+Device Name:     CALvIN
+Home Drive:      C:
+Running From:    C:\Users\calvi\v\YaugerAIO
+---------------------------------------
+: Clear Prefetch:
+: Clear Minidumps:
+: Clear Update Cache:
+: Clear DRMM Packages:
+: Clear Browser Caches: False (Cookies are always preserved)
+: Clear Win Error Logs:
+: Empty Recycle Bin:    False
+---------------------------------------
+: Statistics for Drive C:
+- Free Space: 313.03 GB
+- Used Space: 568.49 GB
+- % Free:     35.51%
+- (Was:       35.06%)
+=======================================
+Set-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\diskcleanup_fastmode.ps1:155:5
+Line |
+ 155 |      Set-ItemProperty "HKLM:\Software\v" -Name SGLCleanup -v …
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path 'HKLM:\Software\v' because it does not exist.
+: Account Name:      C:\WINDOWS\system32\config\systemprofile
+: Account Type:      LocalSystem
+: valid for Cleanup: NO
+------
+: Account Name:      C:\WINDOWS\ServiceProfiles\LocalService
+: Account Type:      NT Authority
+: valid for Cleanup: NO
+------
+: Account Name:      C:\WINDOWS\ServiceProfiles\NetworkService
+: Account Type:      NetworkService
+: valid for Cleanup: NO
+------
+: Account Name:      C:\Users\calvi
+: Account Type:      User [Local]
+: valid for Cleanup: YES
+------
+- The following user directories' temporary data will be cleared:
+: C:\Users\calvi
+=======================================
+: User: C:\Users\calvi
+- Clearing local temporary data
+: Not clearing Windows Error Reporting logs [User]
+: Not clearing Browser caches
+------
+- Finished clearing per-user data.
+=======================================
+: Not emptying Recycle Bin/s
+- Clearing Temp directory
+: Not clearing PreFetch
+: Not clearing Windows Update cache
+: Not clearing Minidumps
+: Not clearing Packages Folder
+: Not clearing Windows Error Reporting logs [Global]
+=======================================
+- Disk cleanup completed!
+: Statistics for Drive C:
+- Free Space: 313.03 GB
+- Used Space: 568.49 GB
+- % Free:     35.51%
+- (Was:       35.06%)
+- A deletion log has been written to StdErr.
+  It has also been saved locally at C:\ProgramData\v\Temp\RMMDC-1750474100.txt.
+FAIL Failed: Disk Cleanup - Could not find a part of the path 'C:\ProgramData\v\Temp\RMMDC-1750474100.txt'.
+Capturing storage metrics (After)...
+PS>TerminatingError(): "The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object."
+FAIL Failed to capture storage metrics (After): The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+Generating reports...
+PS>TerminatingError(): "The script failed due to call depth overflow."
+
+
+
+Warning: Could not generate performance report: The script failed due to call depth overflow.
+Space cleanup report function not found, skipping...
+OK Reports generated
+Workflow completed!
+
+=== Workflow Summary ===
+Session ID: 4ae2e718-bc68-4dce-8c90-d7b978d5e341
+Total Tasks: 6
+Successful: 4
+Failed: 2
+Skipped: 0
+Duration: 00:00:05
+
+=== Task Details ===
+  OK Rebuild Registry Index (00:00)
+  OK Rebuild Windows Search Index (00:00)
+  OK Check Hibernation (00:00)
+  OK Disable Fast Boot (00:00)
+  FAIL Reset Page File (00:00)
+  FAIL Disk Cleanup (00:00)
+
+Workflow completed!
+
+PS>$repo.GetLatestMetrics()
+
+
+tasks            : {}
+failures         : {}
+metrics          : {}
+workflowTasks    : {}
+configuration    : {}
+sessionId        : d171168f-c346-469b-8f92-e21e925a25a5
+sessionStartTime : 21/06/2025 03:49:17
+
+PS>Test-YaugerAIOSystem
+=== YaugerAIO System Test ===
+Testing class instantiation...
+OK Repository class instantiated
+OK Interface class instantiated
+Testing script availability...
+OK Public\fastchecks.ps1 found
+OK Private\DebugInfo.ps1 found
+OK Private\FileStorageInfo.ps1 found
+Testing function loading...
+OK Function RebuildRegistryIndex loaded
+OK Function CheckHibernation loaded
+OK Function DisableFastBoot loaded
+Testing disk space...
+OK System Drive has 313.03 GB free space
+
+System test completed!
+
+
+
+
+
+
+
+
+
+
+PS>Get-YaugerAIOStatus
+=== YaugerAIO System Status ===
+System Information:
+  OS: Microsoft Windows 11 Pro 64-bit
+  Computer: CALvIN
+  Total Memory: 31.84 GB
+
+Storage Information:
+  Drive C::
+    Total: 881.52 GB
+    Used: 568.49 GB
+    Free: 313.03 GB (35.5%)
+  Drive D::
+    Total: 223.57 GB
+    Used: 185.28 GB
+    Free: 38.29 GB (17.1%)
+  Drive E::
+    Total: 11.77 GB
+    Used: 5.62 GB
+    Free: 6.15 GB (52.3%)
+  Drive F::
+    Total: 238.46 GB
+    Used: 107.84 GB
+    Free: 130.62 GB (54.8%)
+  Drive G::
+    Total: 243.16 GB
+    Used: 157.08 GB
+    Free: 86.08 GB (35.4%)
+  Drive H::
+    Total: 222.59 GB
+    Used: 140.95 GB
+    Free: 81.64 GB (36.7%)
+  Drive K::
+    Total: 465.74 GB
+    Used: 371.79 GB
+    Free: 93.95 GB (20.2%)
+
+Recent High-Memory Processes:
+  v 654.1 MB
+  v 551.4 MB
+  brave: 539 MB
+  pwsh: 521.7 MB
+  brave: 510 MB
+
+
+
+
+
+
+
+PS>. .\Public\diskcleanup_fastmode.ps1
+Disk Cleanup Tool (06/21/2025 03:50:48)
+=======================================
+Windows version: Microsoft Windows 11 Pro [10.0.26100.4351]
+Device Name:     CALvIN
+Home Drive:      C:
+Running From:    C:\Users\calvi\v\YaugerAIO
+---------------------------------------
+: Clear Prefetch:
+: Clear Minidumps:
+: Clear Update Cache:
+: Clear DRMM Packages:
+: Clear Browser Caches: False (Cookies are always preserved)
+: Clear Win Error Logs:
+: Empty Recycle Bin:    False
+---------------------------------------
+: Statistics for Drive C:
+- Free Space: 313.03 GB
+- Used Space: 568.49 GB
+- % Free:     35.51%
+- (Was:       35.06%)
+=======================================
+Set-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\diskcleanup_fastmode.ps1:155:5
+Line |
+ 155 |      Set-ItemProperty "HKLM:\Software\v" -Name SGLCleanup -v …
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path 'HKLM:\Software\v' because it does not exist.
+Set-ItemProperty: C:\Users\calvi\v\YaugerAIO\Public\diskcleanup_fastmode.ps1:155:5
+Line |
+ 155 |      Set-ItemProperty "HKLM:\Software\v" -Name SGLCleanup -v …
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path 'HKLM:\Software\v' because it does not exist.
+
+: Account Name:      C:\WINDOWS\system32\config\systemprofile
+: Account Type:      LocalSystem
+: valid for Cleanup: NO
+------
+: Account Name:      C:\WINDOWS\ServiceProfiles\LocalService
+: Account Type:      NT Authority
+: valid for Cleanup: NO
+------
+: Account Name:      C:\WINDOWS\ServiceProfiles\NetworkService
+: Account Type:      NetworkService
+: valid for Cleanup: NO
+------
+: Account Name:      C:\Users\calvi
+: Account Type:      User [Local]
+: valid for Cleanup: YES
+------
+- The following user directories' temporary data will be cleared:
+: C:\Users\calvi
+=======================================
+: User: C:\Users\calvi
+- Clearing local temporary data
+: Not clearing Windows Error Reporting logs [User]
+: Not clearing Browser caches
+------
+- Finished clearing per-user data.
+=======================================
+: Not emptying Recycle Bin/s
+- Clearing Temp directory
+: Not clearing PreFetch
+: Not clearing Windows Update cache
+: Not clearing Minidumps
+: Not clearing Packages Folder
+: Not clearing Windows Error Reporting logs [Global]
+=======================================
+- Disk cleanup completed!
+: Statistics for Drive C:
+- Free Space: 313.03 GB
+- Used Space: 568.49 GB
+- % Free:     35.51%
+- (Was:       35.06%)
+- A deletion log has been written to StdErr.
+  It has also been saved locally at C:\ProgramData\v\Temp\RMMDC-1750474249.txt.
+[...snip...]
+Out-File: C:\Users\calvi\v\YaugerAIO\Public\diskcleanup_fastmode.ps1:391:11
+Line |
+ 391 |  $arrLog | out-file "$env:ProgramData\v\Temp\RMMDC-$varEpoch …
+     |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Could not find a part of the path 'C:\ProgramData\v\Temp\RMMDC-1750474249.txt'.
+Out-File: C:\Users\calvi\v\YaugerAIO\Public\diskcleanup_fastmode.ps1:391:11
+Line |
+ 391 |  $arrLog | out-file "$env:ProgramData\v\Temp\RMMDC-$varEpoch …
+     |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Could not find a part of the path 'C:\ProgramData\v\Temp\RMMDC-1750474249.txt'.
+
+<-Start Diagnostic->
+A disk cleanup operation was performed at 06/21/2025 03:50:49.
+Drive C: WAS: 35.06% Free
+Drive C:  IS: 35.51% Free
+<-End Diagnostic->
+=======================================
+- Exiting...
+
+
+PS>& { . .\Public\computer_perf_report.ps1; ComputerPerformanceReport | ConvertTo-Json -Depth 100 -AsArray }
+Computer Performance Report
+==========================
+Starting Computer Performance Report...
+GetDebugDetails
+Debug Details:
+OS: Microsoft Windows 11 Pro
+OS Architecture: 64-bit
+Computer Name: localhost
+version: 10.0.26100
+Build Number: 26100
+GetUserDetails
+GetMachineDetails
+checking hung processes
+checking network
+checking temp files
+Error in GetMaxchineDetails: Could not find a part of the path ''
+Report completed successfully!
+Data available in: $result.out.data
+[
+  {
+    "out": {
+      "unresponsiveProcesses": "None",
+      "TempSize": 127.47,
+      "TempCount": 76,
+      "UserInfo": "CALvIN\\calvi - Disc\n"
+    },
+    "data": {},
+    "success": true
+  }
+]
+
+PS>& { . .\Public\computer_space_cleanup_report.ps1; ComputerSpaceCleanupReport | ConvertTo-Json -Depth 100 -AsArray }
+Computer Space Cleanup Report
+=============================
+Test-Path: C:\Users\calvi\v\YaugerAIO\Public\computer_space_cleanup_report.ps1:111:14
+Line |
+ 111 |          if ((Test-Path $sPath.path.Replace("*","")) -or ($sPath.path  …
+     |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Access to the path 'C:\ProgramData\Microsoft\Diagnosis\EventTranscript\' is denied.
+Test-Path: C:\Users\calvi\v\YaugerAIO\Public\computer_space_cleanup_report.ps1:111:14
+Line |
+ 111 |          if ((Test-Path $sPath.path.Replace("*","")) -or ($sPath.path  …
+     |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Access to the path 'C:\ProgramData\Microsoft\Diagnosis\EventTranscript\' is denied.
+WARNING: Could not find folder C:\ProgramData\Microsoft\Diagnosis\EventTranscript\
+WARNING: Could not find folder C:\Users\username\Downloads
+Getting size of folder C:\Windows\WinSxS.
+WARNING: Could not find folder C:\inetpub\logs\LogFiles\*
+Getting size of folder C:\Windows\Logs\CBS.
+Getting size of folder C:\Windows\Logs\DISM.
+Getting size of folder C:\Windows\Logs\MeasuredBoot.
+Getting size of folder C:\Windows\Logs\MoSetup.
+Getting size of folder C:\Windows\Logs\NetSetup.
+Getting size of folder C:\Windows\Logs\SetupCleanupTask.
+Getting size of folder C:\Windows\Logs\SIH.
+Getting size of folder C:\Windows\Logs\SystemRestore.
+Getting size of folder C:\Windows\Logs\Telephony.
+Getting size of folder C:\Windows\Logs\waasmedic.
+Getting size of folder C:\Windows\Logs\WindowsUpdate.
+Getting size of folder C:\Windows\Logs\WinREAgent.
+Getting size of folder C:\Windows\System32\LogFiles\CloudFiles.
+Getting size of folder C:\Windows\System32\LogFiles\Firewall.
+Getting size of folder C:\Windows\System32\LogFiles\SAM.
+Getting size of folder C:\Windows\System32\LogFiles\Scm.
+Getting size of folder C:\Windows\System32\LogFiles\setupcln.
+Getting size of folder C:\Windows\System32\LogFiles\UnionFS.
+Getting size of folder C:\Windows\System32\LogFiles\Windows Portable Devices.
+Getting size of folder C:\Windows\System32\LogFiles\WMI.
+Getting size of folder C:\$Recycle.Bin\S-1-5-18.
+Getting size of folder C:\$Recycle.Bin\S-1-5-21-89860026-1586533328-910821474-1000.
+Getting size of folder C:\$Recycle.Bin\S-1-5-21-89860026-1586533328-910821474-1001.
+Getting size of folder C:\windows.
+Getting size of folder C:\windows\Minidump.
+Getting size of folder C:\ProgramData\Microsoft\Windows\WER.
+Getting size of folder C:\windows\Temp.
+WARNING: Could not find folder C:\Users\username\AppData\Local\Temp
+WARNING: Could not find folder C:\Users\username\AppData\
+
+Operation completed successfully!
+Data available in: $result.out
+[
+  {
+    "out": {
+      "fileDetails": null,
+      "space": null,
+      "timeTaken": null,
+      "systemDiskInfo": {
+        "text": "C:\\",
+        "value": "C:\\",
+        "FreeSpace (Gb)": "313.03",
+        "Total (Gb)": "881.52",
+        "FreePercent": 35.51
+      },
+      "freeSpace": 336114569216,
+      "Folders": [
+        {
+          "text": "Windows WinSxS",
+          "path": "C:\\Windows\\WinSxS",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 14.285
+        },
+        {
+          "text": "Windows Log Files\\CBS",
+          "path": "C:\\Windows\\Logs\\CBS",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.118
+        },
+        {
+          "text": "Windows Log Files\\DISM",
+          "path": "C:\\Windows\\Logs\\DISM",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.007
+        },
+        {
+          "text": "Windows Log Files\\MeasuredBoot",
+          "path": "C:\\Windows\\Logs\\MeasuredBoot",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.002
+        },
+        {
+          "text": "Windows Log Files\\MoSetup",
+          "path": "C:\\Windows\\Logs\\MoSetup",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.0
+        },
+        {
+          "text": "Windows Log Files\\NetSetup",
+          "path": "C:\\Windows\\Logs\\NetSetup",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.004
+        },
+        {
+          "text": "Windows Log Files\\SetupCleanupTask",
+          "path": "C:\\Windows\\Logs\\SetupCleanupTask",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows Log Files\\SIH",
+          "path": "C:\\Windows\\Logs\\SIH",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.0
+        },
+        {
+          "text": "Windows Log Files\\SystemRestore",
+          "path": "C:\\Windows\\Logs\\SystemRestore",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows Log Files\\Telephony",
+          "path": "C:\\Windows\\Logs\\Telephony",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows Log Files\\waasmedic",
+          "path": "C:\\Windows\\Logs\\waasmedic",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.004
+        },
+        {
+          "text": "Windows Log Files\\WindowsUpdate",
+          "path": "C:\\Windows\\Logs\\WindowsUpdate",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.014
+        },
+        {
+          "text": "Windows Log Files\\WinREAgent",
+          "path": "C:\\Windows\\Logs\\WinREAgent",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.002
+        },
+        {
+          "text": "Windows System32 Log Files\\CloudFiles",
+          "path": "C:\\Windows\\System32\\LogFiles\\CloudFiles",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.0
+        },
+        {
+          "text": "Windows System32 Log Files\\Firewall",
+          "path": "C:\\Windows\\System32\\LogFiles\\Firewall",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows System32 Log Files\\SAM",
+          "path": "C:\\Windows\\System32\\LogFiles\\SAM",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows System32 Log Files\\Scm",
+          "path": "C:\\Windows\\System32\\LogFiles\\Scm",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows System32 Log Files\\setupcln",
+          "path": "C:\\Windows\\System32\\LogFiles\\setupcln",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.001
+        },
+        {
+          "text": "Windows System32 Log Files\\UnionFS",
+          "path": "C:\\Windows\\System32\\LogFiles\\UnionFS",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows System32 Log Files\\Windows Portable Devices",
+          "path": "C:\\Windows\\System32\\LogFiles\\Windows Portable Devices",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows System32 Log Files\\WMI",
+          "path": "C:\\Windows\\System32\\LogFiles\\WMI",
+          "fileList": "*",
+          "reportOnly": "Yes",
+          "sizeGB": 0.039
+        },
+        {
+          "text": "Recycle Bin\\NT AUTHORITY\\SYSTEM",
+          "path": "C:\\$Recycle.Bin\\S-1-5-18",
+          "fileList": "*",
+          "reportOnly": "No",
+          "sizeGB": 0
+        },
+        {
+          "text": "Recycle Bin\\S-1-5-21-89860026-1586533328-910821474-1000",
+          "path": "C:\\$Recycle.Bin\\S-1-5-21-89860026-1586533328-910821474-1000",
+          "fileList": "*",
+          "reportOnly": "No",
+          "sizeGB": 0
+        },
+        {
+          "text": "Recycle Bin\\CALvIN\\calvi",
+          "path": "C:\\$Recycle.Bin\\S-1-5-21-89860026-1586533328-910821474-1001",
+          "fileList": "*",
+          "reportOnly": "No",
+          "sizeGB": 1.18
+        },
+        {
+          "text": "System error memory dump",
+          "path": "C:\\windows",
+          "fileList": "*.dmp",
+          "reportOnly": "No",
+          "sizeGB": 0
+        },
+        {
+          "text": "System error memory minidump",
+          "path": "C:\\windows\\Minidump",
+          "fileList": "*.dmp",
+          "reportOnly": "No",
+          "sizeGB": 0
+        },
+        {
+          "text": "Windows Error Reporting Files",
+          "path": "C:\\ProgramData\\Microsoft\\Windows\\WER",
+          "fileList": "*",
+          "reportOnly": "No",
+          "sizeGB": 0.0
+        },
+        {
+          "text": "Windows Temp Files",
+          "path": "C:\\windows\\Temp",
+          "fileList": "*",
+          "reportOnly": "No",
+          "sizeGB": 0
+        }
+      ]
+    },
+    "success": true
+  }
+]
+
+PS>Stop-Transcript
+**********************
+PowerShell transcript end
+End time: 20250621035356
+**********************
