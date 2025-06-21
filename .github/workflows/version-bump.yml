@@ -1,0 +1,192 @@
+name: Semantic Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Type of version bump'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      create_tag:
+        description: 'Create a git tag for this version'
+        required: false
+        default: true
+        type: boolean
+      push_changes:
+        description: 'Push changes to repository'
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/version-bump.yml'
+
+jobs:
+  version-bump:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup PowerShell
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Configure Git
+        shell: pwsh
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine Bump Type
+        id: bump-type
+        shell: pwsh
+        run: |
+          $bumpType = "${{ github.event.inputs.bump_type }}"
+          
+          # If no input provided, try to determine from commit messages
+          if (-not $bumpType -or $bumpType -eq '') {
+            $commitMsg = git log -1 --pretty=%B
+            Write-Host "Latest commit message: $commitMsg"
+            
+            if ($commitMsg -match '\[major\]|\[breaking\]|BREAKING CHANGE') {
+              $bumpType = 'major'
+            }
+            elseif ($commitMsg -match '\[minor\]|\[feature\]|feat:') {
+              $bumpType = 'minor'
+            }
+            else {
+              $bumpType = 'patch'
+            }
+          }
+          
+          Write-Host "Bump type: $bumpType"
+          echo "bump_type=$bumpType" >> $env:GITHUB_OUTPUT
+
+      - name: Calculate New Version
+        id: new-version
+        shell: pwsh
+        run: |
+          $manifestPath = ".\YaugerAIO.psd1"
+          $manifest = Import-PowerShellDataFile $manifestPath
+          $currentVersion = [Version]$manifest.ModuleVersion
+          
+          Write-Host "Current version: $currentVersion"
+          
+          $bumpType = "${{ steps.bump-type.outputs.bump_type }}"
+          
+          switch ($bumpType) {
+            'major' {
+              $newVersion = [Version]::new($currentVersion.Major + 1, 0, 0)
+            }
+            'minor' {
+              $newVersion = [Version]::new($currentVersion.Major, $currentVersion.Minor + 1, 0)
+            }
+            'patch' {
+              $newVersion = [Version]::new($currentVersion.Major, $currentVersion.Minor, $currentVersion.Build + 1)
+            }
+            default {
+              throw "Invalid bump type: $bumpType"
+            }
+          }
+          
+          $versionString = $newVersion.ToString()
+          Write-Host "New version: $versionString"
+          echo "new_version=$versionString" >> $env:GITHUB_OUTPUT
+
+      - name: Update Module Version
+        shell: pwsh
+        run: |
+          $manifestPath = ".\YaugerAIO.psd1"
+          $newVersion = "${{ steps.new-version.outputs.new_version }}"
+          
+          # Update the manifest version
+          $content = Get-Content $manifestPath -Raw
+          $content = $content -replace "ModuleVersion = '.*'", "ModuleVersion = '$newVersion'"
+          Set-Content -Path $manifestPath -Value $content -NoNewline
+          
+          Write-Host "Updated module version to $newVersion"
+
+      - name: Update Release Notes
+        shell: pwsh
+        run: |
+          $newVersion = "${{ steps.new-version.outputs.new_version }}"
+          $bumpType = "${{ steps.bump-type.outputs.bump_type }}"
+          $date = Get-Date -Format "yyyy-MM-dd"
+          
+          $releaseNotes = @"
+## Version $newVersion - $date
+
+### Changes in this release:
+- $bumpType version bump
+- Enhanced system maintenance and optimization tools
+- Improved error handling and performance monitoring
+- Threaded operations for better performance
+
+For detailed information, please visit the [project page](https://github.com/Graytools/YaugerAIO).
+"@
+          
+          # Update the manifest release notes
+          $manifestPath = ".\YaugerAIO.psd1"
+          $content = Get-Content $manifestPath -Raw
+          $content = $content -replace "ReleaseNotes = '.*'", "ReleaseNotes = '$($releaseNotes.Replace("'", "''"))'"
+          Set-Content -Path $manifestPath -Value $content -NoNewline
+          
+          Write-Host "Updated release notes"
+
+      - name: Commit and Push Changes
+        if: ${{ github.event.inputs.push_changes != 'false' }}
+        shell: pwsh
+        run: |
+          $newVersion = "${{ steps.new-version.outputs.new_version }}"
+          $bumpType = "${{ steps.bump-type.outputs.bump_type }}"
+          
+          git add YaugerAIO.psd1
+          git commit -m "Bump version to $newVersion ($bumpType bump)"
+          
+          # Push changes
+          git push origin main
+
+      - name: Create Git Tag
+        if: ${{ github.event.inputs.create_tag != 'false' }}
+        shell: pwsh
+        run: |
+          $newVersion = "${{ steps.new-version.outputs.new_version }}"
+          
+          # Create and push tag
+          git tag -a "v$newVersion" -m "Release version $newVersion"
+          git push origin "v$newVersion"
+          
+          Write-Host "Created and pushed tag v$newVersion"
+
+      - name: Create Pull Request
+        if: ${{ github.event.inputs.push_changes == 'false' }}
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Bump version to ${{ steps.new-version.outputs.new_version }}"
+          title: "Version bump to ${{ steps.new-version.outputs.new_version }}"
+          body: |
+            This PR bumps the module version to ${{ steps.new-version.outputs.new_version }}.
+            
+            **Bump type:** ${{ steps.bump-type.outputs.bump_type }}
+            **New version:** ${{ steps.new-version.outputs.new_version }}
+            
+            Changes made:
+            - Updated ModuleVersion in YaugerAIO.psd1
+            - Updated ReleaseNotes in YaugerAIO.psd1
+          branch: version-bump-${{ steps.new-version.outputs.new_version }}
+          base: main
+          delete-branch: true 

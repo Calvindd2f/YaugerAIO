@@ -1,0 +1,210 @@
+name: Documentation
+
+on:
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'Public/**'
+      - 'Private/**'
+      - 'YaugerAIO.psm1'
+      - 'YaugerAIOclasses.ps1'
+  push:
+    branches: [ main ]
+    paths:
+      - 'Public/**'
+      - 'Private/**'
+      - 'YaugerAIO.psm1'
+      - 'YaugerAIOclasses.ps1'
+
+jobs:
+  validate-docs:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache PowerShell modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/powershell/Modules
+            ~/.nuget/packages
+          key: ${{ runner.os }}-powershell-modules-${{ hashFiles('**/*.psd1') }}
+          restore-keys: |
+            ${{ runner.os }}-powershell-modules-
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck -AllowClobber
+
+      - name: Validate Function Documentation
+        shell: pwsh
+        run: |
+          # Import module
+          Import-Module .\YaugerAIO.psd1 -Force
+          
+          $functions = Get-Command -Module YaugerAIO
+          $undocumentedFunctions = @()
+          
+          foreach ($function in $functions) {
+            $help = Get-Help $function.Name -ErrorAction SilentlyContinue
+            if (-not $help.Synopsis -or $help.Synopsis -eq '') {
+              $undocumentedFunctions += $function.Name
+            }
+          }
+          
+          if ($undocumentedFunctions) {
+            Write-Host "Undocumented functions found:"
+            $undocumentedFunctions | ForEach-Object { Write-Host "  - $_" }
+            throw "All functions must have documentation. Please add help comments to the undocumented functions."
+          } else {
+            Write-Host "All functions are properly documented"
+          }
+          
+          # Remove module
+          Remove-Module YaugerAIO -Force
+
+      - name: Validate Markdown Files
+        shell: pwsh
+        run: |
+          # Check for markdown files
+          $markdownFiles = Get-ChildItem -Path . -Filter "*.md" -Recurse
+          
+          foreach ($file in $markdownFiles) {
+            Write-Host "Validating $($file.Name)..."
+            
+            # Check for broken links (basic check)
+            $content = Get-Content $file.FullName -Raw
+            $links = [regex]::Matches($content, '\[([^\]]+)\]\(([^)]+)\)')
+            
+            foreach ($link in $links) {
+              $url = $link.Groups[2].Value
+              if ($url.StartsWith('http')) {
+                try {
+                  $response = Invoke-WebRequest -Uri $url -Method Head -TimeoutSec 10 -ErrorAction Stop
+                  if ($response.StatusCode -ne 200) {
+                    Write-Warning "Broken link found in $($file.Name): $url (Status: $($response.StatusCode))"
+                  }
+                }
+                catch {
+                  Write-Warning "Broken link found in $($file.Name): $url (Error: $($_.Exception.Message))"
+                }
+              }
+            }
+          }
+
+  generate-docs:
+    runs-on: windows-latest
+    needs: validate-docs
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup PowerShell
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Generate Function Documentation
+        shell: pwsh
+        run: |
+          # Import module
+          Import-Module .\YaugerAIO.psd1 -Force
+          
+          $functions = Get-Command -Module YaugerAIO | Sort-Object Name
+          
+          $functionDocs = @"
+# YaugerAIO Functions
+
+This document provides an overview of all functions available in the YaugerAIO module.
+
+## Functions
+
+"@
+          
+          foreach ($function in $functions) {
+            $help = Get-Help $function.Name
+            $functionDocs += @"
+
+### $($function.Name)
+
+**Synopsis:** $($help.Synopsis)
+
+**Description:** $($help.Description.Text)
+
+**Syntax:**
+```powershell
+$($help.Syntax.SyntaxItem | ForEach-Object { $_.ToString() })
+```
+
+"@
+            
+            if ($help.Parameters) {
+              $functionDocs += "**Parameters:**`n"
+              foreach ($param in $help.Parameters.Parameter) {
+                $functionDocs += "- **$($param.Name)**: $($param.Description.Text)`n"
+              }
+              $functionDocs += "`n"
+            }
+            
+            if ($help.Examples) {
+              $functionDocs += "**Examples:**`n"
+              foreach ($example in $help.Examples.Example) {
+                $functionDocs += "```powershell`n$($example.Code)`n````n"
+                if ($example.Remarks) {
+                  $functionDocs += "$($example.Remarks.Text)`n"
+                }
+              }
+              $functionDocs += "`n"
+            }
+          }
+          
+          # Write to file
+          $functionDocs | Out-File -FilePath ".\Functions.md" -Encoding UTF8
+          Write-Host "Generated Functions.md with documentation for $($functions.Count) functions"
+          
+          # Remove module
+          Remove-Module YaugerAIO -Force
+
+      - name: Update README
+        shell: pwsh
+        run: |
+          # Read current README
+          $readmeContent = Get-Content .\README.md -Raw
+          
+          # Check if Functions section exists
+          if ($readmeContent -match '## Functions') {
+            Write-Host "Functions section already exists in README"
+          } else {
+            # Add Functions section to README
+            $functionsSection = @"
+
+## Functions
+
+For detailed function documentation, see [Functions.md](Functions.md).
+
+"@
+            $readmeContent += $functionsSection
+            $readmeContent | Out-File -FilePath ".\README.md" -Encoding UTF8 -NoNewline
+            Write-Host "Added Functions section to README"
+          }
+
+      - name: Commit Documentation Updates
+        shell: pwsh
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add Functions.md README.md
+          git diff --staged --quiet || git commit -m "Update function documentation [skip ci]"
+          git push origin main 

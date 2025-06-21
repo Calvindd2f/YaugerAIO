@@ -209,7 +209,7 @@ function GetMachineDetails() {
             }
         }
 
-        $Size = $Tempfiles | measure Length -s
+        $Size = $Tempfiles | measure Length -Sum
         $Filesize = [math]::Round($Size.Sum / 1MB, 2)
 
         $script:activityOutput.out.TempCount = $Tempfiles.Count
@@ -603,3 +603,24 @@ if ($MyInvocation.InvocationName -eq $MyInvocation.MyCommand.Name) {
 
     return $result
 }
+
+function ComputerPerformanceReport {
+    # Main execution - only run if script is called directly
+    if ($MyInvocation.InvocationName -eq $MyInvocation.MyCommand.Name) {
+        Write-Host "Computer Performance Report"
+        Write-Host "=========================="
+
+        $result = ExecuteActivity
+
+        if ($result.success) {
+            Write-Host "`nReport completed successfully!"
+            Write-Host "Data available in: `$result.out.data"
+        }
+        else {
+            Write-Host "`nReport completed with errors."
+        }
+        return $result
+    }
+}
+
+& { . .\Public\computer_perf_report.ps1; ComputerPerformanceReport | ConvertTo-Json -Depth 100 -AsArray }
