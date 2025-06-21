@@ -527,20 +527,26 @@ catch {
 Write-Host "`nRunning Windows Disk Cleanup..." -ForegroundColor Yellow
 try {
     $cleanupBefore = (Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
-    Start-Process -FilePath "cleanmgr.exe" -ArgumentList "/sagerun:1" -Wait -WindowStyle Hidden
-    Start-Sleep -Seconds 5
-    $cleanupAfter = (Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
-    $cleanupFreed = [math]::Round(($cleanupAfter - $cleanupBefore) / 1MB, 2)
+    
+    # Check if cleanmgr.exe exists and is accessible
+    if (Test-Path "C:\Windows\System32\cleanmgr.exe") {
+        Start-Process -FilePath "cleanmgr.exe" -ArgumentList "/sagerun:1" -Wait -WindowStyle Hidden -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 5
+        $cleanupAfter = (Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace
+        $cleanupFreed = [math]::Round(($cleanupAfter - $cleanupBefore) / 1MB, 2)
 
-    if ($cleanupFreed -gt 0) {
-        $TotalSpaceFreed += $cleanupFreed
-        $CleanupReport.Add([PSCustomObject]@{
-                Location   = "Windows Disk Cleanup"
-                Path       = "System Utility"
-                SpaceFreed = "$cleanupFreed MB"
-                Status     = "Success"
-            })
-        Write-Host "✓ Windows Disk Cleanup: $cleanupFreed MB freed" -ForegroundColor Green
+        if ($cleanupFreed -gt 0) {
+            $TotalSpaceFreed += $cleanupFreed
+            $CleanupReport.Add([PSCustomObject]@{
+                    Location   = "Windows Disk Cleanup"
+                    Path       = "System Utility"
+                    SpaceFreed = "$cleanupFreed MB"
+                    Status     = "Success"
+                })
+            Write-Host "✓ Windows Disk Cleanup: $cleanupFreed MB freed" -ForegroundColor Green
+        }
+    } else {
+        Write-Warning "cleanmgr.exe not found or not accessible"
     }
 }
 catch {

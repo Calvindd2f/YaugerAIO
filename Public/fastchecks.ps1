@@ -42,13 +42,20 @@ function ResetPageFile {
         $pageFile = Get-WmiObject -Class Win32_PageFileSetting -ErrorAction Stop
 
         if (-not $pageFile) {
-            throw "No page file settings found"
+            Write-Host "No page file settings found" -ForegroundColor Yellow
+            return $true
         }
 
         $pageFilePath = $pageFile.Name
-        Write-Host "Current page file: $pageFilePath"
-        Write-Host "Current initial size: $($pageFile.InitialSize) MB"
-        Write-Host "Current maximum size: $($pageFile.MaximumSize) MB"
+        Write-Host "Current page file: $pageFilePath" -ForegroundColor Cyan
+        Write-Host "Current initial size: $($pageFile.InitialSize) MB" -ForegroundColor Cyan
+        Write-Host "Current maximum size: $($pageFile.MaximumSize) MB" -ForegroundColor Cyan
+
+        # Check if already system managed
+        if ($pageFile.InitialSize -eq 0 -and $pageFile.MaximumSize -eq 0) {
+            Write-Host "Page file is already system managed" -ForegroundColor Green
+            return $true
+        }
 
         # To reset to system-managed, we need to:
         # 1. Set InitialSize to 0 (system-managed)
@@ -66,8 +73,8 @@ function ResetPageFile {
 
             # Verify the changes
             $updatedPageFile = Get-WmiObject -Class Win32_PageFileSetting
-            Write-Host "Updated initial size: $($updatedPageFile.InitialSize) MB"
-            Write-Host "Updated maximum size: $($updatedPageFile.MaximumSize) MB"
+            Write-Host "Updated initial size: $($updatedPageFile.InitialSize) MB" -ForegroundColor Cyan
+            Write-Host "Updated maximum size: $($updatedPageFile.MaximumSize) MB" -ForegroundColor Cyan
 
             if ($Force) {
                 Write-Host "Rebooting system to apply page file changes..." -ForegroundColor Yellow
@@ -78,11 +85,12 @@ function ResetPageFile {
             }
         }
         else {
-            throw "Failed to update page file settings. Return code: $($result.ReturnValue)"
+            Write-Host "Failed to update page file settings. Return code: $($result.ReturnValue)" -ForegroundColor Yellow
+            return $false
         }
     }
     catch {
-        Write-Error "Failed to reset page file: $_"
+        Write-Host "Failed to reset page file: $_" -ForegroundColor Yellow
         return $false
     }
 

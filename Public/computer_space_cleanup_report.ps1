@@ -284,17 +284,17 @@ function ExecuteActivity {
 }
 #endregion
 
-#region MAIN EXECUTION
-if ($MyInvocation.InvocationName -eq $MyInvocation.MyCommand.Name) {
-    Write-Host "Computer Space Cleanup Report"
-    Write-Host "============================="
-    $result = ExecuteActivity
-    if ($result.success) {
-        Write-Host "`nOperation completed successfully!"
-        Write-Host "Data available in: `$result.out"
-    } else {
-        Write-Host "`nOperation completed with errors."
+function ComputerSpaceCleanupReport {
+    if ($MyInvocation.InvocationName -eq $MyInvocation.MyCommand.Name) {
+        Write-Host "Computer Space Cleanup Report"
+        Write-Host "============================="
+        $result = ExecuteActivity
+        if ($result.success) {
+            Write-Host "`nOperation completed successfully!"
+            Write-Host "Data available in: `$result.out"
+        } else {
+            Write-Host "`nOperation completed with errors."
+        }
+        return $result
     }
-    return $result
 }
-#endregion

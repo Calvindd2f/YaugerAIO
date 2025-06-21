@@ -6,13 +6,12 @@ $commandArgs
 
 #region OUTPUT VARIABLES
 $variableProps = @{
-    $freeSpace      = $null;
-    $Folders        = $null;
-    $systemDiskInfo = $null;
-    $Folders        = $null;
-    $fileDetails    = $null;
-    $space          = $null;
-    $timeTaken      = $null;
+    freeSpace      = $null
+    Folders        = $null
+    systemDiskInfo = $null
+    fileDetails    = $null
+    space          = $null
+    timeTaken      = $null
 }
 $outputProps = @{
     out     = [psobject]::new($variableProps)

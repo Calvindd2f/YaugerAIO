@@ -3,7 +3,7 @@
     RootModule = 'YaugerAIO.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.2.2'
+    ModuleVersion = '1.2.3'
 
     # ID used to uniquely identify this module
     GUID = '12345678-1234-1234-1234-123456789012'
@@ -24,21 +24,7 @@
     PowerShellVersion = '5.1'
 
     # Functions to export from this module
-    FunctionsToExport = @(
-        'Check-DiskSpace',
-        'Check-CPUUsage',
-        'Check-RAMUsage',
-        'Check-GPUDrivers',
-        'Check-SystemUptime',
-        'Clear-BrowserCaches',
-        'Clear-WindowsTemp',
-        'Flush-DNSCache',
-        'Get-WindowsTempSize',
-        'Install-WindowsUpdates',
-        'Run-DISMCheckHealth',
-        'Run-SFCScan',
-        'Get-SystemHealthThreaded'
-    )
+    FunctionsToExport = @( 'Start-YaugerAIOWorkflow', 'Get-YaugerAIOStatus', 'Test-YaugerAIOSystem' )
 
     # Cmdlets to export from this module
     CmdletsToExport = @()
@@ -53,7 +39,7 @@
     PrivateData = @{
         PSData = @{
             # Tags applied to this module
-            Tags = @('Windows', 'Maintenance', 'System', 'Optimization', 'Cleanup')
+            Tags = @('Windows', 'Maintenance', 'System', 'Optimization', 'Cleanup', 'YaugerAIO')
 
             # License URI for this module      Evpx Nyyra Lnhtre
             LicenseUri = 'https://github.com/Graytools/YaugerAIO/blob/main/LICENSE'
@@ -62,7 +48,7 @@
             ProjectUri = 'https://github.com/Graytools/YaugerAIO'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Initial release of YaugerAIO'
+            ReleaseNotes = 'Refactored release of YaugerAIO'
         }
     }
 }
