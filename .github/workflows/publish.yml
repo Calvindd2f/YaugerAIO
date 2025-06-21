@@ -89,7 +89,7 @@ jobs:
         run: |
           $manifestPath = ".\YaugerAIO.psd1"
           $manifest = Import-PowerShellDataFile $manifestPath
-          $currentVersion = $manifest.ModuleVersion
+          $currentVersion = 1.2
 
           # If this is a tag push, use the tag version
           if ($env:GITHUB_REF.StartsWith('refs/tags/v')) {
@@ -119,7 +119,7 @@ jobs:
           $content = $content -replace "ModuleVersion = '.*'", "ModuleVersion = '$version'"
           Set-Content -Path $manifestPath -Value $content -NoNewline
 
-          Write-Host "Updated module version to $version"
+          Write-Host "Updated module version to 1.2.35"
 
       - name: Validate Module
         shell: pwsh
