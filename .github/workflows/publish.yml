@@ -5,6 +5,7 @@ on:
     branches:
       - main
     tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
@@ -89,7 +90,7 @@ jobs:
         run: |
           $manifestPath = ".\YaugerAIO.psd1"
           $manifest = Import-PowerShellDataFile $manifestPath
-          $currentVersion = 1.2
+          $currentVersion = $manifest.ModuleVersion
 
           # If this is a tag push, use the tag version
           if ($env:GITHUB_REF.StartsWith('refs/tags/v')) {
@@ -112,14 +113,14 @@ jobs:
         shell: pwsh
         run: |
           $manifestPath = ".\YaugerAIO.psd1"
-          $w
+          $version = "${{ steps.version.outputs.version }}"
 
           # Update the manifest version
           $content = Get-Content $manifestPath -Raw
           $content = $content -replace "ModuleVersion = '.*'", "ModuleVersion = '$version'"
           Set-Content -Path $manifestPath -Value $content -NoNewline
 
-          Write-Host "Updated module version to 1.2.35"
+          Write-Host "Updated module version to $version"
 
       - name: Validate Module
         shell: pwsh

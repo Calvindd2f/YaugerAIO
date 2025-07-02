@@ -6,7 +6,7 @@
     ModuleVersion = '1.5'
 
     # ID used to uniquely identify this module
-    GUID = '12345678-1234-1234-1234-123456789012'
+    GUID = '61202a7e-012b-4a64-888e-5dbacee33014'
 
     # Author of this module
     Author = 'Rick Yauger'
